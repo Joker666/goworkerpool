@@ -2,12 +2,14 @@ package worker
 
 import (
 	"fmt"
-	"github.com/Joker666/goworkerpool/basic"
-	"github.com/Joker666/goworkerpool/model"
 	"sync"
 	"time"
+
+	"github.com/Joker666/goworkerpool/basic"
+	"github.com/Joker666/goworkerpool/model"
 )
 
+// NotPooledWork does not pool the tasks
 func NotPooledWork(allData []model.SimpleData) {
 	start := time.Now()
 	var wg sync.WaitGroup
@@ -26,7 +28,7 @@ func NotPooledWork(allData []model.SimpleData) {
 		}
 	}()
 
-	for i, _ := range allData {
+	for i := range allData {
 		dataCh <- allData[i]
 	}
 
