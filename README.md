@@ -6,7 +6,7 @@ Golang has a very powerful concurrency model called CSP (communicating sequentia
 ## About The Project
 Here we explore the idea of Thread Pool or Worker Pool in the context of Golang. There are some examples here that show how we can implment naive version of worker pool, build it from there to handle errors and then make a robust worker pool package and add the option to handle tasks in background as well.
 
-Only `workerpool` is a complete package. Other packages are here just for demo. With `workerpool` package, you can spcify the task function to run, concurrency to run with and send payload. It will run the tasks accordingly.
+Only `workerpool` is a complete package. Other packages are here just for the demo. With `workerpool` package, you can spcify the task function to run, concurrency to run with and send payload. It will run the tasks accordingly.
 
 ## Example
 Everything is as simple as
@@ -28,7 +28,7 @@ pool.Run()
 
 ```
 
-This is a very simple example to demonstrate the utility of this package. Here 100 tasks are being run by 5 goroutines concurrently. You can either change number of tasks or concurrency or change both and it will reflect on the performance of the program.
+This is a very simple example to demonstrate the utility of this package. Here 100 tasks are being run by 5 goroutines concurrently. You can either change number of tasks or concurrency or change both, and it will reflect on the performance of the program.
 
 ## How To Run
 We have used excellent [CLI](https://github.com/urfave/cli/) package to make command line tool to explore various examples we have built here. Let's prepare the project running following command
@@ -43,7 +43,7 @@ Now we install our command to the $GOPATH/bin directory:
 $ go install
 ```
 
-Finally run our new command with different command arguments
+Finally, run our new command with different command arguments
 ```bash
 $ goworkerpool pooled
 $ goworkerpool wpool
