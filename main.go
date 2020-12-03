@@ -47,6 +47,11 @@ func robust() {
 	go func() {
 		for {
 			taskID := rand.Intn(100) + 20
+
+			if taskID%7 == 0 {
+				pool.Stop()
+			}
+
 			time.Sleep(time.Duration(rand.Intn(5)) * time.Second)
 			task := workerpool.NewTask(func(data interface{}) error {
 				taskID := data.(int)

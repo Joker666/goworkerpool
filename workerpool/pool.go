@@ -8,11 +8,13 @@ import (
 
 // Pool is the worker pool
 type Pool struct {
-	Tasks []*Task
+	Tasks   []*Task
+	Workers []*Worker
 
-	concurrency int
-	collector   chan *Task
-	wg          sync.WaitGroup
+	concurrency   int
+	collector     chan *Task
+	runBackground chan bool
+	wg            sync.WaitGroup
 }
 
 // NewPool initializes a new pool with the given tasks and
@@ -57,6 +59,7 @@ func (p *Pool) RunBackground() {
 
 	for i := 1; i <= p.concurrency; i++ {
 		worker := NewWorker(p.collector, i)
+		p.Workers = append(p.Workers, worker)
 		go worker.StartBackground()
 	}
 
@@ -64,6 +67,14 @@ func (p *Pool) RunBackground() {
 		p.collector <- p.Tasks[i]
 	}
 
-	forever := make(chan bool)
-	<-forever
+	p.runBackground = make(chan bool)
+	<-p.runBackground
+}
+
+// Stop stops background workers
+func (p *Pool) Stop() {
+	for i := range p.Workers {
+		p.Workers[i].Stop()
+	}
+	p.runBackground <- true
 }
