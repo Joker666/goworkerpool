@@ -1,14 +1,20 @@
 package workerpool
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+	"time"
+)
 
 // Pool is the worker pool
 type Pool struct {
-	Tasks []*Task
+	Tasks   []*Task
+	Workers []*Worker
 
-	concurrency int
-	collector   chan *Task
-	wg          sync.WaitGroup
+	concurrency   int
+	collector     chan *Task
+	runBackground chan bool
+	wg            sync.WaitGroup
 }
 
 // NewPool initializes a new pool with the given tasks and
@@ -35,4 +41,40 @@ func (p *Pool) Run() {
 	close(p.collector)
 
 	p.wg.Wait()
+}
+
+// AddTask adds a task to the pool
+func (p *Pool) AddTask(task *Task) {
+	p.collector <- task
+}
+
+// RunBackground runs the pool in background
+func (p *Pool) RunBackground() {
+	go func() {
+		for {
+			fmt.Print("⌛ Waiting for tasks to come in ...\n")
+			time.Sleep(10 * time.Second)
+		}
+	}()
+
+	for i := 1; i <= p.concurrency; i++ {
+		worker := NewWorker(p.collector, i)
+		p.Workers = append(p.Workers, worker)
+		go worker.StartBackground()
+	}
+
+	for i := range p.Tasks {
+		p.collector <- p.Tasks[i]
+	}
+
+	p.runBackground = make(chan bool)
+	<-p.runBackground
+}
+
+// Stop stops background workers
+func (p *Pool) Stop() {
+	for i := range p.Workers {
+		p.Workers[i].Stop()
+	}
+	p.runBackground <- true
 }
