@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/Joker666/goworkerpool/basic"
@@ -32,7 +33,7 @@ func nonRobust() {
 
 func robust() {
 	var allTask []*workerpool.Task
-	for i := 1; i <= 100; i++ {
+	for i := 1; i <= 20; i++ {
 		task := workerpool.NewTask(func(data interface{}) error {
 			taskID := data.(int)
 			time.Sleep(100 * time.Millisecond)
@@ -43,5 +44,18 @@ func robust() {
 	}
 
 	pool := workerpool.NewPool(allTask, 5)
+	go func() {
+		for {
+			taskID := rand.Intn(100) + 20
+			time.Sleep(time.Duration(rand.Intn(5)) * time.Second)
+			task := workerpool.NewTask(func(data interface{}) error {
+				taskID := data.(int)
+				time.Sleep(100 * time.Millisecond)
+				fmt.Printf("Task %d processed\n", taskID)
+				return nil
+			}, taskID)
+			pool.AddTask(task)
+		}
+	}()
 	pool.RunBackground()
 }

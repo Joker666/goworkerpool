@@ -41,11 +41,16 @@ func (p *Pool) Run() {
 	p.wg.Wait()
 }
 
+// AddTask adds a task to the pool
+func (p *Pool) AddTask(task *Task) {
+	p.collector <- task
+}
+
 // RunBackground runs the pool in background
 func (p *Pool) RunBackground() {
 	go func() {
 		for {
-			fmt.Print("Waiting for tasks to come in ...\n")
+			fmt.Print("⌛ Waiting for tasks to come in ...\n")
 			time.Sleep(10 * time.Second)
 		}
 	}()
