@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/Joker666/goworkerpool/basic"
 	"github.com/Joker666/goworkerpool/model"
 	"github.com/Joker666/goworkerpool/worker"
 	"github.com/Joker666/goworkerpool/workerpool"
-	"time"
 )
 
 func main() {
@@ -42,5 +43,5 @@ func robust() {
 	}
 
 	pool := workerpool.NewPool(allTask, 5)
-	pool.Run()
+	pool.RunBackground()
 }

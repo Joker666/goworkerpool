@@ -1,6 +1,10 @@
 package workerpool
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+	"time"
+)
 
 // Pool is the worker pool
 type Pool struct {
@@ -35,4 +39,26 @@ func (p *Pool) Run() {
 	close(p.collector)
 
 	p.wg.Wait()
+}
+
+// RunBackground runs the pool in background
+func (p *Pool) RunBackground() {
+	go func() {
+		for {
+			fmt.Print("Waiting for tasks to come in ...\n")
+			time.Sleep(10 * time.Second)
+		}
+	}()
+
+	for i := 1; i <= p.concurrency; i++ {
+		worker := NewWorker(p.collector, i)
+		go worker.StartBackground()
+	}
+
+	for i := range p.Tasks {
+		p.collector <- p.Tasks[i]
+	}
+
+	forever := make(chan bool)
+	<-forever
 }

@@ -34,9 +34,23 @@ func (wr *Worker) Start(wg *sync.WaitGroup) {
 	}()
 }
 
+// StartBackground starts the worker in background waiting
+func (wr *Worker) StartBackground() {
+	fmt.Printf("Starting worker %d\n", wr.ID)
+
+	for {
+		select {
+		case task := <-wr.taskChan:
+			process(wr.ID, task)
+		case <-wr.quit:
+			return
+		}
+	}
+}
+
 // Stop quits the worker
 func (wr *Worker) Stop() {
-	fmt.Printf("Closing worker")
+	fmt.Printf("Closing worker %d\n", wr.ID)
 	go func() {
 		wr.quit <- true
 	}()
